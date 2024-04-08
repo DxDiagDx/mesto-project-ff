@@ -26,17 +26,25 @@ const profileDesc = profileInfo.querySelector('.profile__description');
 
 // Работаем с модальными окнами
 function handlerClick(evt) {
-    const currentPopup = document.querySelector('.popup_is-opened');
+    const currentModal = evt.target.closest('.popup');
+
     // закрываем по клику на оверлей
-    if (evt.target === currentPopup) {
-        closeModal(evt);
+    if (evt.target.classList.contains('popup')) {
+        closeModal(currentModal);
     }
+
+    // закрываем по клику на кнопку закрытия
+    if (evt.target.classList.contains('popup__close')) {
+        closeModal(currentModal);
+    }
+
     // открываем попап по клику на редактирование профиля
     if (evt.target === btnProfileEdit) {
         nameInput.value = profileTitle.textContent;
         jobInput.value = profileDesc.textContent;
         openModal(popupEdit);
     }
+
     // открываем попап по клику на добавление карточки
     if (evt.target === btnAddNewCard) {
         openModal(popupNewCard);
@@ -45,11 +53,13 @@ function handlerClick(evt) {
 
 document.addEventListener('click', handlerClick);
 
+
 // обработчики отправки форм
 // функция-обработчик события открытия модального окна для редактирования профиля
 function handleFormProfileSubmit(evt) {
     evt.preventDefault();
 
+    const modal = evt.target.closest('.popup');
     // Получите значение полей jobInput и nameInput из свойства value
     const name = nameInput.value;
     const desc = jobInput.value;
@@ -60,7 +70,7 @@ function handleFormProfileSubmit(evt) {
     profileTitle.textContent = name;
     profileDesc.textContent = desc;
 
-    closeModal(evt);
+    closeModal(modal);
 }
 
 formProfile.addEventListener('submit', handleFormProfileSubmit);
@@ -69,14 +79,16 @@ formProfile.addEventListener('submit', handleFormProfileSubmit);
 function handleFormNewPlaceSubmit(evt) {
     evt.preventDefault();
 
+    const modal = evt.target.closest('.popup');
     // Получите значение полей jobInput и nameInput из свойства value
     const link = formNewPlace.elements['link'].value;
     const namePlace = formNewPlace.elements['place-name'].value;
 
     // Выберите элементы, куда должны быть вставлены значения полей
-    const card = {};
-    card.link = link;
-    card.name = namePlace;
+    const card = {
+        link,
+        name: namePlace
+    };
 
     // Вставьте новые значения с помощью textContent
     const placesItem = createCard(card, cardTemplate, deleteCard, likeCard, openImageModal);
@@ -84,10 +96,11 @@ function handleFormNewPlaceSubmit(evt) {
 
     formNewPlace.reset();
 
-    closeModal(evt);
+    closeModal(modal);
 }
 
 formNewPlace.addEventListener('submit', handleFormNewPlaceSubmit);
+
 
 // функция открытия модального окна изображения карточки
 function openImageModal(evt) {
@@ -105,10 +118,10 @@ function openImageModal(evt) {
 }
 
 // отображение шести карточек при открытии страницы
-function showCard(card, deleteCard) {
+function showCard(card) {
     const placesItem = createCard(card, cardTemplate, deleteCard, likeCard, openImageModal);
     placesList.append(placesItem);
 }
 
 // Вывести карточки на страницу
-initialCards.forEach((card) => showCard(card, deleteCard));
+initialCards.forEach((card) => showCard(card));
