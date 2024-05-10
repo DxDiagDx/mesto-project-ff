@@ -15,11 +15,6 @@ module.exports = {
         static: path.resolve(__dirname, './dist'),
         compress: true,
         port: 8080,
-        open: {
-            app: {
-                name: 'google-chrome',
-            },
-        },
     },
     plugins: [
         new CleanWebpackPlugin(),

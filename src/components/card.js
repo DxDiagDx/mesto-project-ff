@@ -3,6 +3,7 @@ import { removeCard, setLike, unLike } from "../components/api.js"
 
 // Функция создания карточки
 function createCard(card, profileId, cardTemplate, deleteCard, likeCard, openImageModal) {
+    const cardId = card._id;
     const placesItem = cardTemplate.querySelector('.places__item').cloneNode(true);
     const cardImage = placesItem.querySelector('.card__image');
     const cardTitle = placesItem.querySelector('.card__title');
@@ -17,8 +18,6 @@ function createCard(card, profileId, cardTemplate, deleteCard, likeCard, openIma
         btnLikeCard.classList.add('card__like-button_is-active');
     }
 
-    placesItem.dataset.id = card._id;
-
     if ( card.owner._id !== profileId ) {
         btnDeleteCard.remove();
     }
@@ -29,18 +28,16 @@ function createCard(card, profileId, cardTemplate, deleteCard, likeCard, openIma
     cardTitle.textContent = card.name;
     countLikeCard.textContent = card.likes.length;
 
-    btnDeleteCard.addEventListener('click', deleteCard);
-    btnLikeCard.addEventListener('click', likeCard);
-    cardImage.addEventListener('click', openImageModal);
+    btnDeleteCard.addEventListener('click', () => deleteCard(cardId, placesItem));
+    btnLikeCard.addEventListener('click', () => likeCard(cardId, btnLikeCard, countLikeCard));
+    cardImage.addEventListener('click', () => openImageModal(cardImage, cardTitle));
 
     return placesItem;
 }
 
 // Функция удаления карточки
-function deleteCard(evt) {
-    const placesItem = evt.target.closest('.places__item');
-
-    removeCard(placesItem.dataset.id)
+function deleteCard(cardId, placesItem) {
+    removeCard(cardId)
         .then((response) => {
             placesItem.remove();
         })
@@ -50,18 +47,12 @@ function deleteCard(evt) {
 }
 
 // Функция лайка карточки
-function likeCard(evt) {
-    const btnLikeCard = evt.target;
-    const placesItem = btnLikeCard.closest('.places__item');
-    const countLikeCard = placesItem.querySelector('.card__like-count');
-
-    const cardId = placesItem.dataset.id;
-    const hasLikeCard = btnLikeCard.classList.contains('card__like-button_is-active');
-
-    if (hasLikeCard) {
+function likeCard(cardId, btnLikeCard, countLikeCard) {
+    if (btnLikeCard.classList.contains('card__like-button_is-active')) {
         unLike(cardId)
             .then((response) => {
                 countLikeCard.textContent = response.likes.length;
+                btnLikeCard.classList.toggle('card__like-button_is-active');
             })
             .catch((err) => {
                 console.log(err);
@@ -70,13 +61,12 @@ function likeCard(evt) {
         setLike(cardId)
             .then((response) => {
                 countLikeCard.textContent = response.likes.length;
+                btnLikeCard.classList.toggle('card__like-button_is-active');
             })
             .catch((err) => {
                 console.log(err);
             });
     }
-
-    btnLikeCard.classList.toggle('card__like-button_is-active');
 }
 
 export { createCard, deleteCard, likeCard }
