@@ -1,15 +1,11 @@
 export const clearValidation = (formElement, validationConfig) => {
     const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
-    const errorList = Array.from(formElement.querySelectorAll(`.${validationConfig.errorClass}`));
     const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
 
     inputList.forEach((inputElement) => {
         hideInputError(formElement, inputElement, validationConfig);
     })
-    errorList.forEach((errorElement) => {
-        errorElement.textContent = "";
-        errorElement.classList.remove(validationConfig.errorClass);
-    })
+    
     toggleButtonState(inputList, buttonElement, validationConfig);
 }
 

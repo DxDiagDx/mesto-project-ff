@@ -106,7 +106,6 @@ btnProfileEdit.addEventListener('click', openFormProfile);
 function handleFormProfileSubmit(evt) {
     evt.preventDefault();
 
-    const modal = evt.target.closest('.popup');
     const btnSubmit = evt.submitter;
 
     // Получаем значение полей jobInput и nameInput из свойства value
@@ -121,7 +120,7 @@ function handleFormProfileSubmit(evt) {
             // Вставляем новые значения с помощью textContent
             profileTitle.textContent = response.name;
             profileDesc.textContent = response.about;
-            closeModal(modal);
+            closeModal(popupEdit);
         })
         .catch((err) => {
             console.log(err)
@@ -136,14 +135,10 @@ formProfile.addEventListener('submit', handleFormProfileSubmit);
 function handleFormNewPlaceSubmit(evt) {
     evt.preventDefault();
 
-    const modal = evt.target.closest('.popup');
-    const btnSubmit = evt.submitter;
-
     // Получаем link и namePlace из свойства value
     const link = formNewPlace.elements['link'].value;
     const namePlace = formNewPlace.elements['place-name'].value;
-
-    // Выберите элементы, куда должны быть вставлены значения полей
+    const btnSubmit = evt.submitter;
     const card = {
         link,
         name: namePlace
@@ -157,7 +152,7 @@ function handleFormNewPlaceSubmit(evt) {
             // Добавляем на сайт
             const placesItem = createCard(result, profileId, cardTemplate, deleteCard, likeCard, openImageModal);
             placesList.prepend(placesItem);
-            closeModal(modal);
+            closeModal(popupNewCard);
         })
         .catch((err) => {
             console.log(err);
@@ -172,16 +167,16 @@ formNewPlace.addEventListener('submit', handleFormNewPlaceSubmit);
 // Отправка формы добавления новой карточки
 function handleFormAvatarSubmit(evt) {
     evt.preventDefault();
-    const modal = evt.target.closest('.popup');
-    const btnSubmit = evt.submitter;
+    
     const avatar = formAvatar.elements['avatar'].value;
+    const btnSubmit = evt.submitter;
 
     btnSubmit.textContent = "Сохранение...";
 
     updateAvatar(avatar)
         .then((response) => {
             profileImage.style.backgroundImage = `url(${response.avatar})`;
-            closeModal(modal);
+            closeModal(popupAvatar);
         })
         .catch((err) => {
             console.log(err);
